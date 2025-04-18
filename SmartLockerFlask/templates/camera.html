@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>📷 실시간 카메라</title>
+    <style>
+        body { padding: 2rem; font-family: sans-serif; }
+        video {
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            transform: scaleX(-1);
+        }
+    </style>
+</head>
+<body>
+    <h2>📸 실시간 카메라 보기</h2>
+    <video id="localVideo" width="640" height="480" autoplay playsinline></video>
+
+    <script>
+        const video = document.getElementById("localVideo");
+        navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+            .then((stream) => {
+                video.srcObject = stream;
+            })
+            .catch((err) => {
+                alert("카메라 사용 권한이 필요합니다.");
+                console.error("카메라 에러:", err);
+            });
+    </script>
+</body>
+</html>
