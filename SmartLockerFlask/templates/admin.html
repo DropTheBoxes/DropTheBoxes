@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>🧑‍💼관리자 페이지</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div style="padding: 2rem;">
+        <h1 style="color: #002f6c;">🧑‍💼 등록된 사용자 목록</h1>
+        <table style="margin-top: 1rem; width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background-color: #e0f0ff;">
+                    <th style="padding: 8px; text-align: left;">이름</th>
+                    <th style="padding: 8px; text-align: left;">번호</th>
+                    <th style="padding: 8px; text-align: left;">주소</th>
+                    <th style="padding: 8px; text-align: left;">송장번호</th> 
+                    <th style="padding: 8px; text-align: left;">관리</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td style="padding: 8px;">{{ user.name }}</td>
+                    <td style="padding: 8px;">{{ user.phone }}</td>
+                    <td style="padding: 8px;">{{ user.address }}</td>
+                    <td style="padding: 8px;">{{ user.invoice_code }}</td>
+                    <td style="padding: 8px;">
+                        <a href="/delete/{{ user.user_id }}" onclick="return confirm('정말 삭제하시겠습니까?')" class="delete-btn">🗑 삭제</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>            
+        </table>
+        <a href="/" class="mode-btn" style="margin-top: 2rem; display: inline-block;">← 👤사용자 등록으로 돌아가기</a>
+    </div>
+</body>
+</html>

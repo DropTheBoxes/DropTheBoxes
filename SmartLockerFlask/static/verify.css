@@ -1,0 +1,70 @@
+body {
+    font-family: 'Pretendard', sans-serif;
+    background-color: #f5f9ff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* 중앙 정렬 추가 */
+    min-height: 100vh;
+    padding: 60px 20px;  /* 상하좌우 여백 증가 */
+    box-sizing: border-box;
+    
+}
+
+
+.title {
+    font-size: 1.6rem;
+    margin-bottom: 30px;
+    font-weight: bold;
+    color: #0a1e58;
+    text-align: center;
+}
+
+.input-box {
+    width: 300px;
+    height: 70px;
+    background-color: #eaeaea;
+    margin-bottom: 30px;
+    font-size: 2.2rem;
+    text-align: center;
+    line-height: 70px;
+    border-radius: 10px;
+}
+
+.keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    grid-gap: 15px;
+    margin-bottom: 40px;
+}
+
+.keypad button {
+    width: 100px;
+    height: 100px;
+    font-size: 1.8rem;
+    background-color: #052a5f;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.keypad button:hover {
+    background-color: #004080;
+}
+
+.bottom-nav {
+    display: flex;
+    gap: 30px;
+    margin-top: 10px;
+}
+
+.bottom-nav a {
+    padding: 12px 24px;
+    background-color: #001c4a;
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-size: 1rem;
+}
