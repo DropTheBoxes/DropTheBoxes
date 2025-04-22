@@ -5,12 +5,13 @@
     <title> Drop The Box</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
+<body class="main-page">
     <div class="container">
         <div class="left-panel">
             <div class="branding">
                 <h1>📦 Drop The Box</h1>
-                <a href="/admin" class="admin-btn">👥 관리자 페이지 →</a>
+                <a href="/admin_register" class="mode-btn">관리자 모드</a>
+                <a href="/user_register" class="mode-btn">사용자 모드</a>
             </div>
         </div>
         <div class="right-panel">
@@ -18,7 +19,7 @@
                 <label for="name" class="form-label">Name</label>
                 <input id="name" name="name" class="input" required>
             
-                <label for="phone" class="form-label">Phone</label>
+                <label for="phone" class="form-label">Number</label>
                 <input id="phone" name="phone" class="input" required>
             
                 <label for="address" class="form-label">Address</label>

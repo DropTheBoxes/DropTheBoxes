@@ -1,19 +1,21 @@
-
+/* 공통 설정 */
 body {
     margin: 0;
     padding: 0;
     font-family: 'Segoe UI', 'Pretendard', sans-serif;
+}
+
+/* ========== 메인 페이지 스타일 ========== */
+.main-page {
     background-color: #f8fafc;
 }
 
-
-.container {
+.main-page .container {
     display: flex;
     height: 100vh;
 }
 
-
-.left-panel {
+.main-page .left-panel {
     flex: 1;
     background-color: #d0ecfc;
     display: flex;
@@ -21,11 +23,11 @@ body {
     align-items: center;
 }
 
-.branding {
+.main-page .branding {
     text-align: center;
 }
 
-.branding h1 {
+.main-page .branding h1 {
     color: #002f6c;
     font-size: 3.5rem;
     font-weight: 800;
@@ -33,14 +35,13 @@ body {
     margin: 0;
 }
 
-.branding img {
+.main-page .branding img {
     width: 90px;
     height: 90px;
     margin-top: 1.5rem;
 }
 
-
-.right-panel {
+.main-page .right-panel {
     flex: 1;
     background-color: #ffffff;
     display: flex;
@@ -50,14 +51,14 @@ body {
     padding: 2rem;
 }
 
-.form-title {
+.main-page .form-title {
     font-size: 1.7rem;
     font-weight: bold;
     color: #002f6c;
     margin-bottom: 2rem;
 }
 
-.form-box {
+.main-page .form-box {
     width: 100%;
     max-width: 380px;
     display: flex;
@@ -65,8 +66,61 @@ body {
     gap: 1rem;
 }
 
+/* ========== 관리자 인증 페이지 스타일 ========== */
+.admin-page {
+    background-color: #f2f6fc;
+}
 
-.input {
+.admin-page .header {
+    background-color: #dcebf9;
+    padding: 1rem 2rem;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #002f6c;
+}
+
+.admin-page .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+}
+/* 관리자 인증 input 간격 및 정렬 */
+.admin-page .form-group {
+    width: 100%;
+    margin-bottom: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.admin-page .form-box input {
+    width: 100%;
+    max-width: 300px;
+}
+
+/* 관리자 인증 버튼 정렬 */
+.admin-page .submit-btn {
+    width: 150px;
+    margin-top: 0.5rem;
+}
+
+
+.admin-page .form-box {
+    background-color: white;
+    padding: 3rem 4rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    text-align: center;
+}
+
+.admin-page .form-box h2 {
+    color: #002f6c;
+    margin-bottom: 2rem;
+}
+
+/* ========== 공통 input/button 스타일 ========== */
+.input, .form-box input {
     background-color: #f1f5f9;
     border: 1px solid #d1d5db;
     padding: 12px 14px;
@@ -75,7 +129,7 @@ body {
     transition: border-color 0.2s;
 }
 
-.input:focus {
+.input:focus, .form-box input:focus {
     outline: none;
     border-color: #3b82f6;
     background-color: #ffffff;
@@ -86,8 +140,8 @@ body {
     resize: none;
 }
 
-
-.submit-btn {
+/* 등록 버튼 공통 */
+.submit-btn, .form-box button {
     background-color: #002f6c;
     color: white;
     padding: 8px 20px;
@@ -101,12 +155,13 @@ body {
     transition: background-color 0.3s, transform 0.2s;
 }
 
-.submit-btn:hover {
+.submit-btn:hover, .form-box button:hover {
     background-color: #001c47;
     transform: translateY(-1px);
 }
 
-.admin-btn {
+/* 관리자 진입 버튼 */
+.mode-btn {
     display: inline-block;
     margin-top: 2rem;
     font-size: 0.9rem;
@@ -120,12 +175,12 @@ body {
     transition: background-color 0.3s, color 0.3s;
 }
 
-.admin-btn:hover {
+.mode-btn:hover {
     background-color: #002f6c;
     color: white;
 }
 
-/* admin 페이지에서의 id 삭제 버튼 */
+/* 삭제 버튼 */
 .delete-btn {
     color: white;
     background-color: #e11d48;
@@ -139,4 +194,51 @@ body {
 
 .delete-btn:hover {
     background-color: #be123c;
+}
+
+/* 관리자 메뉴 버튼 컨테이너 */
+.menu-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 5rem;
+    gap: 3rem;
+}
+
+/* 관리자 메뉴 버튼 */
+.menu-btn {
+    display: inline-block;
+    width: 180px;
+    height: 100px;
+    background-color: #d1d5db;
+    color: #002f6c;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-align: center;
+    line-height: 100px;
+    border-radius: 20px;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.menu-btn:hover {
+    background-color: #c0c8d2;
+}
+
+/* 왼쪽 하단 처음으로 버튼 */
+.bottom-btn-wrap {
+    position: absolute;
+    bottom: 2rem;
+    left: 2rem;
+}
+
+.back-btn {
+    display: inline-block;
+    background-color: #002f6c;
+    color: white;
+    font-size: 0.95rem;
+    padding: 12px 30px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 500;
 }

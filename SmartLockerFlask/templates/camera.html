@@ -5,7 +5,7 @@
     <title>📷 실시간 카메라</title>
     <style>
         body { padding: 2rem; font-family: sans-serif; }
-        video {
+        img {
             border: 2px solid #ccc;
             border-radius: 8px;
             transform: scaleX(-1);
@@ -13,19 +13,8 @@
     </style>
 </head>
 <body>
-    <h2>📸 실시간 카메라 보기</h2>
-    <video id="localVideo" width="640" height="480" autoplay playsinline></video>
-
-    <script>
-        const video = document.getElementById("localVideo");
-        navigator.mediaDevices.getUserMedia({ video: true, audio: false })
-            .then((stream) => {
-                video.srcObject = stream;
-            })
-            .catch((err) => {
-                alert("카메라 사용 권한이 필요합니다.");
-                console.error("카메라 에러:", err);
-            });
-    </script>
+    <h2>📸 라즈베리파이의의 실시간 카메라 보기</h2>
+    <img src="http://192.168.0.15:5000/video_feed" width="640" height="480">
 </body>
 </html>
+

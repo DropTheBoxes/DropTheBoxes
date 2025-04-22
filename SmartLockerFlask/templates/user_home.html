@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>사용자 모드</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="admin-page">
+    <div class="header">사용자 모드</div>
+
+    <div class="menu-container">
+        <a href="/select_locker" class="menu-btn">물품 찾기</a>
+        <a href="/select_locker" class="menu-btn">물품 보관</a>
+        <a href="/admin/delivery" class="menu-btn">보관 현황</a>
+    </div>
+
+    <div class="bottom-btn-wrap">
+        <a href="/" class="back-btn">처음으로</a>
+    </div>
+</body>
+</html>

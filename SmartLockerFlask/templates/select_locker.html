@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>이용 보관함 선택</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='select_locker.css') }}">
+</head>
+<body>
+    <h2 class="title">이용 보관함 선택</h2>
+
+    <div class="locker-grid">
+        {% for i in range(1, 13) %}
+            <button class="locker-btn" onclick="selectLocker({{ i }})" id="locker-{{ i }}">{{ i }}</button>
+        {% endfor %}
+    </div>
+    
+    <div class="bottom-area">
+        <a href="/" class="nav-btn">처음으로</a>
+        <button class="nav-btn" onclick="confirmSelection()">확인</button>
+        <a href="/user_home" class="nav-btn">이전으로</a>
+    </div>
+
+    <script>
+        let selectedLocker = null;
+
+
+        function selectLocker(num) {
+            // 기존 선택 해제
+            if (selectedLocker !== null) {
+                document.getElementById(`locker-${selectedLocker}`).classList.remove("selected");
+            }
+
+            // 새로 선택
+            selectedLocker = num;
+            document.getElementById(`locker-${num}`).classList.add("selected");
+        }
+
+        // 확인 버튼 눌렀을 때
+        function confirmSelection() {
+            if (selectedLocker === null) {
+                alert("보관함을 선택해주세요.");
+                return;
+            }
+
+            window.location.href = `/input_password?locker=${selectedLocker}`;
+
+        }
+    </script>
+</body>
+</html>
