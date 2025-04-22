@@ -1,16 +1,17 @@
-#define TRIG_PIN 9
+#define TRIG_PIN 11
 #define ECHO_PIN 10
 
-#define RED_LED 6
-#define GREEN_LED 7
+#define RED_LED 8
+#define GREEN_LED 9
 
 long duration;
 float distance;
+String currentStatus = "";  // 현재 상태 저장 변수
 
 void setup() {
   pinMode(TRIG_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
-  
+
   pinMode(RED_LED, OUTPUT);
   pinMode(GREEN_LED, OUTPUT);
 
@@ -29,18 +30,22 @@ void loop() {
   duration = pulseIn(ECHO_PIN, HIGH);
   distance = duration * 0.034 / 2;  // cm 단위
 
-  Serial.print("거리: ");
-  Serial.print(distance);
-  Serial.println(" cm");
+  String newStatus = (distance < 10.0) ? "사용중" : "사용가능";
 
-  if (distance < 10.0) {  // 10cm 이내에 물체가 있으면 "사용중"
-    digitalWrite(RED_LED, HIGH);
-    digitalWrite(GREEN_LED, LOW);
-    Serial.println("상태: 사용중");
-  } else {
-    digitalWrite(RED_LED, LOW);
-    digitalWrite(GREEN_LED, HIGH);
-    Serial.println("상태: 사용가능");
+  // 상태가 바뀌었을 때만 시리얼 전송
+  if (newStatus != currentStatus) {
+    currentStatus = newStatus;
+
+    // LED 표시
+    if (newStatus == "사용중") {
+      digitalWrite(RED_LED, HIGH);
+      digitalWrite(GREEN_LED, LOW);
+    } else {
+      digitalWrite(RED_LED, LOW);
+      digitalWrite(GREEN_LED, HIGH);
+    }
+
+    Serial.println("상태: " + newStatus);
   }
 
   delay(500);  // 0.5초마다 측정
