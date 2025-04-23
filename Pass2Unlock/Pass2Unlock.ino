@@ -370,7 +370,7 @@ void displayPassAndActivateSolenoid(){
 void displayFail(){
   clearDisplay();
 
-  // PASS 패턴 복사
+  // FAIL 패턴 복사
   for(int digit=0; digit<4; digit++){
     for(int seg=0; seg<8;seg++){
       displayData[digit][seg]=FAIL[digit][seg];
@@ -379,7 +379,7 @@ void displayFail(){
 
   displayNeedsUpdate = true;
   
-  // PASS 표시를 유지하면서 솔레노이드 작동 시간 동안 대기
+  // FAIL 표시를 유지하면서 작동 시간 동안 대기
   unsigned long startTime = millis();
   while(millis() - startTime < 3000) { // 3초 동안 표시 및 솔레노이드 작동
     updateDisplay();
