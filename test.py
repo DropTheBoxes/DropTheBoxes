@@ -23,7 +23,7 @@ def update_locker_status(status, locker_id):
         conn.commit()
 
     except Exception as e:
-        print("DB:", e)
+        print("DB: ", e)
 
     finally:
         cursor.close()
