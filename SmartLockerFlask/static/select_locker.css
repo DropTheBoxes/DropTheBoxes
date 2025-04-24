@@ -1,0 +1,59 @@
+body {
+    font-family: 'Pretendard', sans-serif;
+    background-color: #f5f9ff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;  /* 수직 가운데 정렬 */
+    align-items: center;      /* 수평 가운데 정렬 */
+    min-height: 100vh;        /* 화면 전체 높이 기준 정렬 */
+    padding: 40px;
+    box-sizing: border-box;
+}
+
+
+.title {
+    font-size: 1.6rem;
+    font-weight: bold;
+    margin-bottom: 30px;
+    color: #0a1e58;
+}
+
+.locker-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 40px;
+}
+
+.locker-btn {
+    height: 100px;
+    background-color: #ccc;
+    border: 1px solid #999;
+    font-size: 1.5rem;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: 0.2s;
+}
+
+.locker-btn.selected {
+    background-color: #004080;
+    color: white;
+}
+
+.bottom-area {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.nav-btn {
+    padding: 12px 24px;
+    background-color: #001c4a;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 1rem;
+    cursor: pointer;
+}

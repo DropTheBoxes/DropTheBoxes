@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>사용자 인증</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="admin-page">
+    <div class="header">사용자 모드</div>
+    <div class="container">
+        <form method="POST" class="form-box">
+            <h2>사용자 인증</h2>
+        
+            <div class="form-group">
+                <input type="text" name="name" placeholder="Name" required class="input">
+            </div>
+        
+            <div class="form-group">
+                <input type="text" name="phone" placeholder="Number" required class="input">
+            </div>
+        
+            <button type="submit" class="submit-btn">확인</button>
+        </form>
+        
+    </div>
+</body>
+</html>

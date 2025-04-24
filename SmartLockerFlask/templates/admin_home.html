@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>관리자 메뉴</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="admin-page">
+    <div class="header">관리자 모드</div>
+
+    <div class="menu-container">
+        <a href="/camera" class="menu-btn">CCTV</a>
+        <a href="/admin" class="menu-btn">사용자 목록</a>
+        <a href="/admin/delivery" class="menu-btn">보관현황</a>
+    </div>
+
+    <div class="bottom-btn-wrap">
+        <a href="/" class="back-btn">처음으로</a>
+    </div>
+</body>
+</html>
