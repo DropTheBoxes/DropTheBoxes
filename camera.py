@@ -1,6 +1,6 @@
 from flask import Flask, Response
-from picamera2 import Picamera2
 import cv2
+from picamera2 import Picamera2
 
 app = Flask(__name__)
 picam2 = Picamera2()
