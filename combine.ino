@@ -1,20 +1,37 @@
-#include <Keypad.h>
 #include <SPI.h>
 #include <MFRC522.h>
+#include <Keypad.h>
 
 String receivedPassword = "";
 
 // 핀 설정
-#define SS_PIN 3
+// RFID
+#define SS_PIN 3 // SOA
 #define RST_PIN 2
-#define TRIG_PIN 25
-#define ECHO_PIN 23
-#define HALL_PIN 29
-#define RELAY_PIN 39
-#define RED 33
-#define GREEN 35
 
-MFRC522 rfid(SS_PIN, RST_PIN);
+// 초음파
+#define TRIG_PIN 23
+#define ECHO_PIN 25
+
+// 홀센서
+#define HALL_PIN 29
+
+// 솔레노이드 제어 릴레이
+#define RELAY_PIN_1 39 // 문 잠금 장치
+#define RELAY_PIN_2 41 // 문 자동 개폐 장치
+
+// LED
+#define RED 39
+#define GREEN 41
+
+// 4digit 7-segment
+const int DigitPins[4] = {22, 24, 26, 28}; // Digit 제어 핀 (D1~D4)
+const int SegmentPins[8] = {30, 32, 34, 36, 38, 40, 42, 44}; // a~g, dp
+
+// keypad
+byte rowPins[ROWS] = {7, 8, 9, 10}; // 키패드 행 핀
+byte colPins[COLS] = {11, 12, 13};     // 키패드 열 핀
+Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 
 // 키패드 설정
 const byte ROWS = 4; // 4개 행
@@ -26,13 +43,7 @@ char keys[ROWS][COLS] = {
   {'*','0','#'}
 };
 
-// 핀 설정
-const int DigitPins[4] = {22, 24, 26, 28}; // Digit 제어 핀 (D1~D4)
-const int SegmentPins[8] = {30, 32, 34, 36, 38, 40, 42, 44}; // a~g, dp
-
-byte rowPins[ROWS] = {7, 8, 9, 10}; // 키패드 행 핀
-byte colPins[COLS] = {11, 12, 13};     // 키패드 열 핀
-Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
+MFRC522 rfid(SS_PIN, RST_PIN);
 
 // 논리값 정의 (공통 애노드 기준)
 const bool DigitOn  = LOW;
@@ -68,7 +79,6 @@ const bool FAIL[4][8] = {
   {0, 0, 0, 1, 1, 1, 0, 0}   // L
 };
 
-
 // 표시할 값 저장용 배열
 bool displayData[4][8] = {0};  // 4자리 x 8세그먼트
 
@@ -88,6 +98,7 @@ bool displayNeedsUpdate = true;
 // 디버그 모드 설정
 const bool DEBUG = true;
 
+
 // 전역 변수
 bool authorized = false;
 bool objectDetected = false;
@@ -105,14 +116,16 @@ void setup() {
   rfid.PCD_Init();
   Serial.println("RFID 보관함 시스템 시작");
 
-  pinMode(TRIG_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
   pinMode(HALL_PIN, INPUT);
-  pinMode(RELAY_PIN, OUTPUT);
-
-  digitalWrite(RELAY_PIN, LOW);
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(RELAY_PIN1, OUTPUT);
+  pinMode(RELAY_PIN2, OUTPUT);
   pinMode(GREEN, OUTPUT);
   pinMode(RED, OUTPUT);
+
+  digitalWrite(RELAY_PIN1, LOW);
+  digitalWrite(RELAY_PIN2, LOW);
   digitalWrite(GREEN, LOW);
   digitalWrite(RED, LOW);
 
