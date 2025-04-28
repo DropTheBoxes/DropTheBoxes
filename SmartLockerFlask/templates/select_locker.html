@@ -4,16 +4,21 @@
     <meta charset="UTF-8">
     <title>이용 보관함 선택</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='select_locker.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <h2 class="title">이용 보관함 선택</h2>
 
     <div class="locker-grid">
         {% for i in range(1, 13) %}
-            <button class="locker-btn" onclick="selectLocker({{ i }})" id="locker-{{ i }}">{{ i }}</button>
+            {% set status = locker_status.get(i, '비어있음') %}
+            {% set status_class = 'in-use' if status == '사용중' else 'available' %}
+            <button class="locker-btn {{ status_class }}" onclick="selectLocker({{ i }})" id="locker-{{ i }}">
+                {{ i }}
+            </button>
         {% endfor %}
     </div>
-    
+
     <div class="bottom-area">
         <a href="/" class="nav-btn">처음으로</a>
         <button class="nav-btn" onclick="confirmSelection()">확인</button>
@@ -23,28 +28,49 @@
     <script>
         let selectedLocker = null;
 
-
         function selectLocker(num) {
             // 기존 선택 해제
             if (selectedLocker !== null) {
                 document.getElementById(`locker-${selectedLocker}`).classList.remove("selected");
             }
 
-            // 새로 선택
+            // 새 선택 적용
             selectedLocker = num;
             document.getElementById(`locker-${num}`).classList.add("selected");
         }
 
-        // 확인 버튼 눌렀을 때
         function confirmSelection() {
             if (selectedLocker === null) {
                 alert("보관함을 선택해주세요.");
                 return;
             }
-
             window.location.href = `/input_password?locker=${selectedLocker}`;
-
         }
+
+        // AJAX 상태 갱신 함수
+        function refreshLockerStatus() {
+            $.getJSON('/api/locker_status', function(response) {
+                if (response.status === 'ok') {
+                    response.data.forEach(locker => {
+                        const button = document.getElementById(`locker-${locker.locker_id}`);
+                        if (!button || button.classList.contains('selected')) return;
+
+                        // 기존 상태 제거
+                        button.classList.remove('available', 'in-use');
+
+                        // 새 상태 적용
+                        if (locker.status === '사용중') {
+                            button.classList.add('in-use');
+                        } else {
+                            button.classList.add('available');
+                        }
+                    });
+                }
+            });
+        }
+        // 처음 로딩 + 주기적 갱신
+        window.onload = refreshLockerStatus;
+        setInterval(refreshLockerStatus, 5000);
     </script>
 </body>
 </html>
