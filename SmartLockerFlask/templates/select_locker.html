@@ -8,6 +8,9 @@
 </head>
 <body>
     <h2 class="title">이용 보관함 선택</h2>
+    <input type="hidden" id="user_id" value="{{ user_id }}">
+    <input type="hidden" id="name" value="{{ name }}">
+    <input type="hidden" id="phone" value="{{ phone }}">
 
     <div class="locker-grid">
         {% for i in range(1, 13) %}
@@ -40,12 +43,18 @@
         }
 
         function confirmSelection() {
-            if (selectedLocker === null) {
-                alert("보관함을 선택해주세요.");
-                return;
-            }
-            window.location.href = `/input_password?locker=${selectedLocker}`;
-        }
+    if (selectedLocker === null) {
+        alert("보관함을 선택해주세요.");
+        return;
+    }
+
+        const user_id = document.getElementById('user_id').value;
+        const name = document.getElementById('name').value;
+        const phone = document.getElementById('phone').value;
+
+        const url = `/input_password?locker=${selectedLocker}&user_id=${encodeURIComponent(user_id)}&name=${encodeURIComponent(name)}&phone=${encodeURIComponent(phone)}`;
+        window.location.href = url;
+    }
 
         // AJAX 상태 갱신 함수
         function refreshLockerStatus() {
