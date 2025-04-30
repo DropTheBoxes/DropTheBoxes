@@ -26,8 +26,13 @@ def register():
         address = request.form['address']
         phone = request.form['phone']
 
-        role = '관리자' if name.strip() == '관리자' else '사용자'
-        invoice_code = ''.join(random.choices(string.digits, k=12))
+        # 이름에 따른 역할 부여
+        if name.strip() in ['관리자', 'admin']:
+            role = '관리자'
+        elif name.strip() in ['택배기사', '기사님']:
+            role = '택배기사'
+        else:
+            role = '사용자'
 
         try:
             with conn.cursor() as cursor:
@@ -36,10 +41,13 @@ def register():
                     VALUES (%s, %s, %s, %s)
                 """, (name, address, phone, role))
                 receiver_id = cursor.lastrowid
-                cursor.execute("""
-                    INSERT INTO delivery (receiver_id, locker_id, password, invoice_code, status)
-                    VALUES (%s, NULL, NULL, %s, '보관')
-                """, (receiver_id, invoice_code))
+
+                if role == '사용자':
+                    invoice_code = ''.join(random.choices(string.digits, k=12))
+                    cursor.execute("""
+                        INSERT INTO delivery (receiver_id, locker_id, password, invoice_code, status)
+                        VALUES (%s, NULL, NULL, %s, '보관')
+                    """, (receiver_id, invoice_code))
             conn.commit()
         except Exception as e:
             return f"등록 중 오류 발생: {e}"
@@ -61,6 +69,7 @@ def admin_page():
                 SELECT u.user_id, u.name, u.phone, u.address, d.invoice_code
                 FROM users u
                 LEFT JOIN delivery d ON u.user_id = d.receiver_id
+                WHERE u.role = '사용자'
             """)
             users = cursor.fetchall()
         return render_template('admin.html', users=users)
@@ -112,11 +121,11 @@ def user_register():
         name = request.form['name']
         phone = request.form['phone']
         with conn.cursor() as cursor:
-            cursor.execute("SELECT * FROM users WHERE name=%s AND role='사용자' AND phone=%s", (name, phone))
+            cursor.execute("SELECT * FROM users WHERE name=%s AND role IN ('사용자', '택배기사') AND phone=%s", (name, phone))
             user = cursor.fetchone()
         conn.close()
         if user:
-            return redirect('/user_home')
+            return redirect(f"/user_home?user_id={user['user_id']}&name={user['name']}&phone={user['phone']}")
         else:
             return render_template('user_register.html', failed=True)
     conn.close()
@@ -128,27 +137,44 @@ def admin_home():
 
 @app.route('/user_home')
 def user_home():
-    return render_template('user_home.html')
+    user_id = request.args.get('user_id')
+    name = request.args.get('name')
+    phone = request.args.get('phone')
+
+    return render_template('user_home.html', user_id=user_id, name=name, phone=phone)
+
+
 
 @app.route('/input_password')
 def input_password():
     locker_id = request.args.get('locker')
-    return render_template('input_password.html', locker_id=locker_id)
+    user_id = request.args.get('user_id')
+    name = request.args.get('name')
+    phone = request.args.get('phone')
+    return render_template('input_password.html', locker_id=locker_id, user_id=user_id, name=name, phone=phone)
+
 
 
 @app.route('/select_locker')
 def select_locker():
+    user_id = request.args.get('user_id')
+    name = request.args.get('name')
+    phone = request.args.get('phone')
+
     conn = get_db_connection()
     try:
         with conn.cursor() as cursor:
             cursor.execute("SELECT locker_id, status FROM locker")
             locker_status = cursor.fetchall()
         locker_dict = {int(row['locker_id']): row['status'] for row in locker_status if row['locker_id'] is not None}
-        return render_template('select_locker.html', locker_status=locker_dict)
+        return render_template('select_locker.html',
+                               locker_status=locker_dict,
+                               user_id=user_id, name=name, phone=phone)  # ✅ 이 부분 중요
     except Exception as e:
         return f"보관함 조회 중 오류 발생: {e}"
     finally:
         conn.close()
+
 
 @app.route('/verify_pin', methods=['POST'])
 def verify_pin():
@@ -156,41 +182,40 @@ def verify_pin():
     try:
         pin = request.form['pin']
         locker_id = int(request.form['locker_id'])
+        user_id = int(request.form['user_id'])
+        name = request.form['name']
+        phone = request.form['phone']
 
         with conn.cursor() as cursor:
-            # 1. locker_id를 통해 현재 보관 중인 배송건 찾기
+            # 1. 본인의 물품인지 확인 (user_id + name + phone 일치해야 함)
             cursor.execute("""
-                SELECT invoice_code, password, fail_count FROM delivery WHERE locker_id = %s AND status = '보관'
-            """, (locker_id,))
+                SELECT d.invoice_code, d.password, d.fail_count
+                FROM delivery d
+                JOIN users u ON d.receiver_id = u.user_id
+                WHERE d.locker_id = %s AND d.status = '보관'
+                AND d.receiver_id = %s AND u.name = %s AND u.phone = %s
+            """, (locker_id, user_id, name, phone))
             result = cursor.fetchone()
 
             if not result:
-                return jsonify({"success": False, "message": "해당 보관함에 물건이 없습니다."})
+                return jsonify({"success": False, "message": "본인의 물품이 아닙니다."})
 
             invoice_code = result['invoice_code']
             db_password = result['password']
             fail_count = result['fail_count']
 
-            # 2. PIN 비교
             if pin == db_password:
-                # 인증 성공 → fail_count 초기화, 배송건 수령처리, 락커 상태 사용가능 처리
                 cursor.execute("""
                     UPDATE delivery SET fail_count = 0, status = '수령' WHERE invoice_code = %s
                 """, (invoice_code,))
-
                 cursor.execute("""
                     UPDATE locker SET status = '사용가능' WHERE locker_id = %s
                 """, (locker_id,))
-
                 conn.commit()
                 return jsonify({"success": True, "message": "인증 성공! 보관함이 열렸습니다."})
-
             else:
-                # 인증 실패 → fail_count + 1
                 fail_count += 1
-
                 if fail_count >= 5:
-                    # 5회 실패 → 새 비밀번호 발급
                     new_password = str(random.randint(1000, 9999))
                     cursor.execute("""
                         UPDATE delivery SET password = %s, fail_count = 0 WHERE invoice_code = %s
@@ -202,7 +227,6 @@ def verify_pin():
                         "new_password": new_password
                     })
                 else:
-                    # 아직 5회 미만이면 실패횟수만 증가
                     cursor.execute("""
                         UPDATE delivery SET fail_count = %s WHERE invoice_code = %s
                     """, (fail_count, invoice_code))
@@ -211,13 +235,78 @@ def verify_pin():
                         "success": False,
                         "message": f"비밀번호가 틀렸습니다. 현재 실패 {fail_count}회"
                     })
-
     except Exception as e:
-        print(f"서버 오류 발생: {e}")  # 서버 콘솔에 에러 로그 남기기
+        print(f"서버 오류 발생: {e}")
         return jsonify({"success": False, "message": "서버 오류가 발생했습니다."})
-    
     finally:
         conn.close()
+
+# @app.route('/verify_pin', methods=['POST'])
+# def verify_pin():
+#     conn = get_db_connection()
+#     try:
+#         pin = request.form['pin']
+#         locker_id = int(request.form['locker_id'])
+
+#         with conn.cursor() as cursor:
+#             # 1. locker_id를 통해 현재 보관 중인 배송건 찾기
+#             cursor.execute("""
+#                 SELECT invoice_code, password, fail_count FROM delivery WHERE locker_id = %s AND status = '보관'
+#             """, (locker_id,))
+#             result = cursor.fetchone()
+
+#             if not result:
+#                 return jsonify({"success": False, "message": "해당 보관함에 물건이 없습니다."})
+
+#             invoice_code = result['invoice_code']
+#             db_password = result['password']
+#             fail_count = result['fail_count']
+
+#             if pin == db_password:
+#                 # 인증 성공 fail_count 초기화, 배송건 수령처리, 락커 상태는 사용가능 처리
+#                 cursor.execute("""
+#                     UPDATE delivery SET fail_count = 0, status = '수령' WHERE invoice_code = %s
+#                 """, (invoice_code,))
+
+#                 cursor.execute("""
+#                     UPDATE locker SET status = '사용가능' WHERE locker_id = %s
+#                 """, (locker_id,))
+
+#                 conn.commit()
+#                 return jsonify({"success": True, "message": "인증 성공! 보관함이 열렸습니다."})
+
+#             else:
+#                 fail_count += 1
+
+#                 if fail_count >= 5:
+#                     #5회시 새 비밀번호 발급
+#                     new_password = str(random.randint(1000, 9999))
+#                     cursor.execute("""
+#                         UPDATE delivery SET password = %s, fail_count = 0 WHERE invoice_code = %s
+#                     """, (new_password, invoice_code))
+#                     conn.commit()
+#                     return jsonify({
+#                         "success": False,
+#                         "message": "5회 실패. 새 비밀번호 발급되었습니다.",
+#                         "new_password": new_password
+#                     })
+#                 else:
+#                     # 아직 5회 미만이면 실패횟수만 증가
+#                     cursor.execute("""
+#                         UPDATE delivery SET fail_count = %s WHERE invoice_code = %s
+#                     """, (fail_count, invoice_code))
+#                     conn.commit()
+#                     return jsonify({
+#                         "success": False,
+#                         "message": f"비밀번호가 틀렸습니다. 현재 실패 {fail_count}회"
+#                     })
+
+#     except Exception as e:
+#         print(f"서버 오류 발생: {e}")  # 서버 콘솔에 에러 로그 남기기
+#         return jsonify({"success": False, "message": "서버 오류가 발생했습니다."})
+    
+#     finally:
+#         conn.close()
 
 
 @app.route('/api/locker_status')
