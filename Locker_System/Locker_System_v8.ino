@@ -16,14 +16,14 @@ MFRC522 rfid(SS_PIN, RST_PIN);
 #define HALL_PIN 29
 
 // 솔레노이드 제어 릴레이
-#define LOCK 39 // 잠금용
-#define PUSH 41 // 문 push용
+#define LOCK 12 // 잠금용
+#define PUSH 39 // 문 push용
 
 // LED
 #define RED 33
 #define GREEN 35
 
-#define BUZZER_PIN 12
+#define BUZZER_PIN 41
 
 // 4digit 7-segment 핀 설정
 const int DigitPins[4] = {22, 28, 30, 44}; // Digit 제어 핀 (LED 핀 6, 8, 9, 12)
@@ -123,7 +123,7 @@ void setup() {
   SPI.begin();
   rfid.PCD_Init();
 
-  Serial.println("RFID 보관함 시스템 시작");
+  // Serial.println("RFID 보관함 시스템 시작");
   // 모든 핀 초기화
   initializePins();
 
@@ -194,7 +194,7 @@ void processSerialInput() {
       delay(2);
     }
     str.trim();
-    Serial.println(str);
+    // Serial.println(str);
     // 입력이 4자리 숫자일 때만 비밀번호로 저장
     if (str.length() == 4 && isDigit(str[0]) &&
         isDigit(str[1]) && isDigit(str[2]) &&
@@ -298,7 +298,7 @@ void processKeyInput(char key) {
   } else{
     if(key == 'A'){
       solenoidActive = !solenoidActive;
-      Serial.println(solenoidActive);
+      // Serial.println(solenoidActive);
       if(solenoidActive){
         // Serial.println("A 키 입력: 솔레노이드 활성화");
         solenoidHigh2();
@@ -612,7 +612,7 @@ bool detectObject() {
   newStatus = (distance < 10.0) ? "사용중" : "사용가능";
 
   if(previousStatus!=newStatus){
-    Serial.println("상태 변화");
+    // Serial.println("상태 변화");
     clearDisplay();
     resetDisplay();
     setDisplayNumber("0000");
