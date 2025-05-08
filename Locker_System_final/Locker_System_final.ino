@@ -94,6 +94,7 @@ char displayNumber[5] = "0000";
 // 4자리 비밀번호 + null 종료 문자
 char secretCode[5] = "";
 String receivedPassword = "";
+bool passwordReady = false;
 
 // 입력된 숫자 자릿수 카운터 (0-4)
 int digitCount = 0;
@@ -156,6 +157,7 @@ void loop() {
   static String lastStatus = "";
   
   // 디스플레이 업데이트는 매 루프마다 수행
+  // testSegments();
   updateDisplay();
   
   // 센서 측정은 100ms마다 수행
@@ -166,7 +168,7 @@ void loop() {
     sendStatus();
     LEDStatus();
     
-    if(newStatus == "사용가능") {
+    if(!authorized && newStatus == "사용가능") {
       checkRFID();
       keyProcess();
     } else if(newStatus == "사용중") {
@@ -174,6 +176,19 @@ void loop() {
     }
 
     checkHallSensor();
+  }
+}
+
+
+void testSegments() {
+  for (int i = 0; i < 8; i++) {
+    Serial.print("Testing segment: ");
+    Serial.println(i);
+    
+    digitalWrite(SegmentPins[i], SegOn);
+    delay(1000);
+    digitalWrite(SegmentPins[i], SegOff);
+    delay(500);
   }
 }
 
@@ -200,6 +215,7 @@ void processSerialInput() {
         isDigit(str[1]) && isDigit(str[2]) &&
         isDigit(str[3])) {
       str.toCharArray(secretCode, 5); // 4글자 + null 종료
+      passwordReady = true; 
       // Serial.print("비밀번호가 설정되었습니다: ");
       // Serial.println(secretCode);
     } else if (str.length() > 0 && str!="T" && str!="S") {
@@ -498,6 +514,11 @@ void sendPassword(){
 }
 
 void comparePassword(){
+  if (!passwordReady) {
+    // Serial.println("아직 비밀번호가 수신되지 않음");
+    return;
+  }
+
   if(strcmp(displayNumber, secretCode)==0){
     // Serial.println("비밀번호 일치");
     // Serial.println("PASSWORD 보관함 열림");
@@ -573,10 +594,10 @@ void checkRFID() {
       uidStr += String(rfid.uid.uidByte[i], HEX);
     }
     uidStr.toUpperCase();
-    Serial.print("RFID UID: "); Serial.println(uidStr);
+    // Serial.print("RFID UID: "); Serial.println(uidStr);
 
     if (uidStr == "86C1DE1F") {
-      Serial.println("RFID 보관함 열림");
+      // Serial.println("RFID 보관함 열림");
       solenoidHigh1();
       authorized = true;
       
@@ -609,17 +630,17 @@ bool detectObject() {
   }
   
   float distance = duration * 0.034 / 2;
-  newStatus = (distance < 10.0) ? "사용중" : "사용가능";
+  newStatus = (distance < 15.0) ? "사용중" : "사용가능";
 
   if(previousStatus!=newStatus){
     // Serial.println("상태 변화");
     clearDisplay();
     resetDisplay();
     setDisplayNumber("0000");
-    updateDisplay();
+    // updateDisplay();
   }
 
-  return distance > 0 && distance < 10;
+  return distance > 0 && distance < 15;
 }
 
 // 홀센서(배송기사) 감지 함수
@@ -632,7 +653,6 @@ void checkHallSensor() {
   // 상태 변화 감지: HIGH → LOW
   if (prevHallSensorState == HIGH && mag == LOW) {
     hallSensorCount++;
-    authorized = false;
     // Serial.print("홀센서 감지 횟수: ");
     // Serial.println(hallSensorCount);
   }
@@ -651,6 +671,7 @@ void checkHallSensor() {
       objectDetected = false;
       hallSensorStartTime = 0;
       hallSensorCount = 1;
+      rfid.PCD_Init();
       // Serial.println("보관함 잠금 완료");
       delay(1000);
     }
