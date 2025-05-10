@@ -97,7 +97,7 @@ CREATE TABLE delivery (
 <img src="https://github.com/user-attachments/assets/68336479-7ef6-4bc6-aa76-ebaf1ab29e61" width="50%" height="50%">
 
 ✔️ 아두이노 코드 설계
-![image](https://github.com/user-attachments/assets/805b17cb-37cc-42bb-bb36-70ffc0effacb)
+<img src="https://github.com/user-attachments/assets/805b17cb-37cc-42bb-bb36-70ffc0effacb" width="50%" height="50%">
 
 
 
