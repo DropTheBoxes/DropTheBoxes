@@ -91,7 +91,7 @@ CREATE TABLE delivery (
 
 ---
 
-## 하드웨어 설계
+## ⚙️ 하드웨어 설계
 ✔️ 아두이노 회로도
 
 <img src="https://github.com/user-attachments/assets/68336479-7ef6-4bc6-aa76-ebaf1ab29e61" width="50%" height="50%">
