@@ -94,9 +94,10 @@ CREATE TABLE delivery (
 ## 하드웨어 설계
 아두이노 회로도
 
-<img src="[이미지 링크](https://github.com/user-attachments/assets/68336479-7ef6-4bc6-aa76-ebaf1ab29e61)" width="50%" height="50%">
+<img src="https://github.com/user-attachments/assets/68336479-7ef6-4bc6-aa76-ebaf1ab29e61" width="50%" height="50%">
 
-```
+
+
 ## 🔄 시스템 워크플로우
 
 ```
