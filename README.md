@@ -1,5 +1,5 @@
 
-# 📦 Drop the BOX - 스마트 택배 실시간 모니터링 시스템
+# 📦 Drop The Box - 무인 택배 보관함 알림 시스템
 
 ![Python](https://img.shields.io/badge/Python-Flask-yellow)
 ![RaspberryPi](https://img.shields.io/badge/IoT-RaspberryPi-red)
@@ -13,7 +13,7 @@
 
 ## 📌 프로젝트 개요
 
-**Drop the BOX**는 **RFID 인증**, **실시간 택배 감지**, **보관함 개폐 제어**, **카카오톡 알림 발송** 기능을 포함한 스마트 택배 보관함 시스템입니다.  
+**SmartLocker**는 **RFID 인증**, **실시간 택배 감지**, **보관함 개폐 제어**, **카카오톡 알림 발송** 기능을 포함한 무인 택배 보관함 알림 시스템입니다.  
 Python, OpenCV, Arduino, Flask, MySQL, Raspberry Pi 등을 활용해 **현실적인 IoT 기반 스마트 배송 솔루션**을 구현하였습니다.
 
 ---
@@ -22,33 +22,35 @@ Python, OpenCV, Arduino, Flask, MySQL, Raspberry Pi 등을 활용해 **현실적
 
 | 분류        | 기술 / 장비                          |
 |-------------|--------------------------------------|
-| **백엔드**  | Python (Flask), REST API             |
+| **백엔드**  | Python, Flask, REST API             |
 | **프론트엔드**  | HTML, Jinja2, CSS                    |
-| **하드웨어**| Raspberry Pi, Arduino, RFID RC522    |
-| **이미지 처리(OCR)**| OpenCV              |
-| **데이터베이스** | RDS, MySQL                            |
-| **메시지 전송송**  | KakaoTalk API (카카오톡 메시지 발송)  |
+| **하드웨어**| Raspberry Pi 4B, Arduino MEGA, RFID RC522    |
+| **영상 처리(OCR)**| Tesseract OCR + OpenCV              |
+| **데이터베이스** | Amazon RDS, MySQL                            |
+| **메시지 전송**  | KakaoTalk API (카카오톡 메시지 발송)  |
 
 ---
 
 ## 🚀 주요 기능
 
-1. 📮 **택배 감지 및 보관 처리**
-   - OpenCV를 활용해 실시간 택배 유무 판별
-   - 감지 시 상태 변경 및 DB 기록
+1. 📦 **택배 감지 및 보관 처리**
+   - OpenCV를 활용해 택배 송장 번호 인식
+   - 보관함 내 택배가 존재하는지 감지
+   - LED 상태 변경 및 DB 기록
 
 2. 🔐 **RFID 인증**
    - 사용자의 UID를 기반으로 본인 인증
-   - 인증 성공 시 보관함 자동 개방
+   - 인증 성공 시 솔레노이드 동작 -> 보관함 자동 개방
 
 3. 🧾 **송장 자동 생성**
-   - 사용자 등록 시 무작위 송장번호 자동 생성 및 기록
+   - 사용자 등록 시 12자리 랜덤 송장번호 자동 생성 및 송장 이미지 생성
 
-4. 💬 **카카오톡 알림**
-   - 택배 도착, 보관, 수령 완료 시 실시간 카카오톡 전송
+4. 💬 **카카오톡 알림 발송**
+   - 택배 도착, 보관, 수령 완료 시 사용자에게 알림 메시지 발송
 
-5. 🌐 **웹 인터페이스**
-   - Flask 기반 사용자 등록, 송장 확인, 상태 모니터링 UI
+5. 🌐 **관리자/사용자 웹페이지**
+   - Flask 기반 웹 서버 & 실시간 UI 제공
+   - 사용자 등록, 물품 보관, 물품 찾기, 보관 현황, 사용자 목록 확인
 
 ---
 
@@ -89,6 +91,13 @@ CREATE TABLE delivery (
 
 ---
 
+## 하드웨어 설계
+
+```
+아두이노 회로도
+![image](https://github.com/user-attachments/assets/68336479-7ef6-4bc6-aa76-ebaf1ab29e61)
+
+```
 ## 🔄 시스템 워크플로우
 
 ```
